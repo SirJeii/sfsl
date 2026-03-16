@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STI Marikina Sports Fest 2026 - Mobile First Dashboard</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        team: {
+                            black: '#374151',     
+                            pink: '#db2777',   
+                            blue: '#2563eb',      
+                            green: '#16a34a',     
+                            red: '#dc2626',       
+                            violet: '#6d28d9',    
+                            orange: '#f97316'     
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        blob: "blob 7s infinite",
+                        float: "float 4s ease-in-out infinite",
+                        pulseGlow: "pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                    },
+                    keyframes: {
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" }
+                        },
+                        float: {
+                            "0%, 100%": { transform: "translateY(0)" },
+                            "50%": { transform: "translateY(-8px)" }
+                        },
+                        pulseGlow: {
+                            "0%, 100%": { opacity: 1, filter: "drop-shadow(0 0 10px rgba(250, 204, 21, 0.5))" },
+                            "50%": { opacity: .8, filter: "drop-shadow(0 0 20px rgba(250, 204, 21, 0.9))" }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&display=swap');
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0f172a; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Animations */
+        .animate-slide-up {
+            opacity: 0;
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .animate-fade-in {
+            opacity: 0;
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Scrollbars */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Shapes & Glassmorphism */
+        .shield-bottom {
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.2);
+        }
+        .flag-selected {
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
+            transform: translateY(-6px) scale(1.02);
+            border: 2px solid #facc15;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="text-slate-200 overflow-x-hidden relative min-h-screen flex flex-col lg:flex-row">
+
+    <!-- Ambient Background Orbs -->
+    <div class="fixed top-0 left-0 w-72 h-72 bg-blue-600/20 rounded-full mix-blend-screen filter blur-[80px] animate-blob z-0 pointer-events-none"></div>
+    <div class="fixed bottom-0 right-0 w-96 h-96 bg-purple-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob z-0 pointer-events-none" style="animation-delay: 2s;"></div>
+    <div class="fixed top-1/2 left-1/2 w-64 h-64 bg-pink-600/20 rounded-full mix-blend-screen filter blur-[80px] animate-blob z-0 pointer-events-none" style="animation-delay: 4s;"></div>
+
+    <!-- Mobile-First Header / Desktop Left Panel -->
+    <aside class="w-full lg:w-[420px] xl:w-[460px] glass-panel lg:min-h-screen flex flex-col shadow-2xl z-20 lg:sticky lg:top-0 lg:border-r lg:border-b-0 border-slate-700/50">
+        
+        <div class="p-5 sm:p-8 flex-grow flex flex-col animate-fade-in">
+            <!-- Branding (Tap 3 times for Admin) -->
+            <div id="brand-logo" class="flex items-center space-x-4 mb-6 sm:mb-8 cursor-pointer group select-none relative" title="Tap 3 times for Admin">
+                <div class="bg-gradient-to-br from-yellow-300 to-yellow-500 p-3 sm:p-4 rounded-xl shadow-lg transform -rotate-6 animate-float transition-transform duration-300 group-active:scale-95">
+                    <i class="ph-fill ph-fire text-slate-900 text-3xl sm:text-4xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200 tracking-tight leading-none uppercase drop-shadow-sm">STI Marikina</h1>
+                    <h2 class="text-xs sm:text-sm font-bold tracking-widest text-slate-400 mt-1 uppercase">Sports Fest '26</h2>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="mb-6 sm:mb-8 relative z-20 group">
+                <label for="search-input" class="block text-[10px] sm:text-xs font-bold text-slate-400 mb-2 uppercase tracking-widest">Identify Athlete</label>
+                <div class="relative transition-all duration-300">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="ph ph-magnifying-glass text-xl text-slate-400 group-focus-within:text-yellow-400 transition-colors"></i>
+                    </div>
+                    <input
+                        type="text"
+                        id="search-input"
+                        class="block w-full pl-12 pr-4 py-3 sm:py-4 border border-slate-600/50 rounded-xl sm:rounded-2xl leading-5 bg-slate-800/60 text-white placeholder-slate-500 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all text-base sm:text-lg shadow-inner backdrop-blur-md"
+                        placeholder="Enter name or Student ID..."
+                    />
+                </div>
+            </div>
+
+            <!-- Team Flags Grid / Horizontal Scroll -->
+            <div class="flex flex-col flex-grow">
+                <div class="flex items-center justify-between mb-3">
+                    <label class="block text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">Filter by Team</label>
+                    <button id="clear-filter-btn" class="hidden text-[10px] sm:text-xs text-yellow-400 font-bold hover:text-yellow-300 transition-colors uppercase tracking-wider flex items-center gap-1 bg-yellow-400/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full">
+                        <i class="ph-bold ph-x"></i> Reset
+                    </button>
+                </div>
+                
+                <!-- Horizontal scroll on mobile, wrap on desktop -->
+                <div class="flex overflow-x-auto lg:flex-wrap gap-3 sm:gap-4 pb-4 snap-x hide-scrollbar" id="flags-container">
+                    <!-- Flags injected by JS -->
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Results Area -->
+    <main class="flex-1 p-5 sm:p-8 lg:p-12 w-full lg:h-screen lg:overflow-y-auto custom-scrollbar relative z-10">
+        <div class="max-w-4xl mx-auto">
+            
+            <div id="results-header" class="flex justify-between items-start mb-6 sm:mb-10 hidden animate-fade-in">
+                <div class="flex-1">
+                    <h3 class="text-2xl sm:text-3xl font-black text-white drop-shadow-md" id="results-title">Search Results</h3>
+                    <p class="text-slate-400 text-xs sm:text-sm mt-1 font-medium" id="results-subtitle">Showing matching participants</p>
+                    
+                    <!-- Messenger Button Container -->
+                    <div id="messenger-btn-container" class="mt-4 hidden animate-slide-up">
+                        <!-- Button injected via JS when a specific team is selected -->
+                    </div>
+                </div>
+                <div class="glass-card px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl flex items-center gap-2 font-bold text-yellow-400 ml-4 mt-1">
+                    <i class="ph-fill ph-users text-lg sm:text-xl"></i>
+                    <span id="results-count" class="text-base sm:text-lg">0</span>
+                </div>
+            </div>
+
+            <!-- Students Grid -->
+            <div id="students-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <!-- Default Empty State -->
+                <div class="col-span-full py-16 sm:py-24 flex flex-col items-center justify-center text-center animate-slide-up">
+                    <div class="bg-slate-800/50 p-6 sm:p-8 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.3)] border border-slate-700 mb-6 relative">
+                        <i class="ph-fill ph-radar text-5xl sm:text-6xl text-slate-400 animate-pulse"></i>
+                        <div class="absolute inset-0 border-2 border-slate-600 rounded-full animate-ping opacity-20"></div>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 tracking-wide">Awaiting Search</h3>
+                    <p class="text-slate-400 text-sm sm:text-base max-w-xs sm:max-w-sm leading-relaxed px-4">Type an athlete's name, ID, or tap a team flag to view the official roster.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Admin Modal Overlay -->
+    <div id="admin-modal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-50 flex items-center justify-center p-4 transition-all opacity-0">
+        <div class="glass-card rounded-2xl sm:rounded-3xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] border border-slate-700 shadow-2xl transform scale-95 transition-all" id="admin-modal-content">
+            
+            <div class="bg-gradient-to-r from-yellow-500 to-yellow-400 text-slate-900 px-5 sm:px-8 py-4 sm:py-6 flex items-center justify-between sticky top-0 z-10">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <i class="ph-fill ph-shield-check text-2xl sm:text-3xl"></i>
+                    <h2 class="text-lg sm:text-2xl font-black uppercase tracking-wide">Dashboard</h2>
+                </div>
+                <button id="close-modal-btn" class="text-slate-900 hover:text-white transition-colors p-1.5 sm:p-2 rounded-full hover:bg-slate-900/20 active:scale-95">
+                    <i class="ph-bold ph-x text-xl sm:text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="p-5 sm:p-8 overflow-y-auto flex-grow bg-slate-900/50 custom-scrollbar">
+                
+                <!-- Instructions / Upload Area -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8">
+                    <div class="glass-card rounded-xl sm:rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center mb-4 border border-blue-500/30">
+                                <i class="ph-fill ph-file-csv text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-lg sm:text-xl mb-2">1. Get Template</h3>
+                            <p class="text-xs sm:text-sm text-slate-400 mb-4 sm:mb-6">Download the CSV format. Add Student ID, name, and assigned color exactly as formatted.</p>
+                        </div>
+                        <button id="download-btn" class="flex items-center justify-center space-x-2 w-full bg-slate-800 hover:bg-slate-700 text-white py-3 px-4 rounded-xl transition-all font-bold border border-slate-600 active:scale-[0.98]">
+                            <i class="ph-bold ph-download-simple text-lg"></i>
+                            <span class="text-sm sm:text-base">Download CSV</span>
+                        </button>
+                    </div>
+
+                    <div class="glass-card rounded-xl sm:rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-500/20 text-green-400 rounded-xl flex items-center justify-center mb-4 border border-green-500/30">
+                                <i class="ph-fill ph-upload-simple text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-lg sm:text-xl mb-2">2. Import Roster</h3>
+                            <p class="text-xs sm:text-sm text-slate-400 mb-4 sm:mb-6">Upload the completed CSV file to sync the database instantly.</p>
+                        </div>
+                        <div class="w-full">
+                            <input type="file" accept=".csv" id="csv-upload" class="hidden" />
+                            <label for="csv-upload" class="flex items-center justify-center space-x-2 w-full bg-blue-600 hover:bg-blue-500 text-white py-3 px-4 rounded-xl cursor-pointer transition-all font-bold shadow-lg active:scale-[0.98]">
+                                <i class="ph-bold ph-upload-simple text-lg"></i>
+                                <span class="text-sm sm:text-base">Select CSV File</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configure Team Links -->
+                <div class="glass-card rounded-xl sm:rounded-2xl p-5 sm:p-6 mb-8 border border-slate-700">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center border border-purple-500/30">
+                            <i class="ph-fill ph-link text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-lg sm:text-xl">3. Configure Messenger Links</h3>
+                            <p class="text-xs sm:text-sm text-slate-400">Set the group chat invite links for each team.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4" id="admin-links-container">
+                        <!-- Inputs injected by JS -->
+                    </div>
+                    <div class="flex justify-end">
+                        <button id="save-links-btn" class="flex items-center space-x-2 bg-purple-600 hover:bg-purple-500 text-white py-2 px-4 rounded-xl transition-all font-bold shadow-lg active:scale-[0.98]">
+                            <i class="ph-bold ph-floppy-disk text-lg"></i>
+                            <span class="text-sm">Save Links</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Database Preview -->
+                <div class="glass-card rounded-xl sm:rounded-2xl overflow-hidden border border-slate-700">
+                    <div class="px-5 sm:px-6 py-4 border-b border-slate-700/50 flex items-center justify-between bg-slate-800/50">
+                        <h3 class="font-bold text-white text-sm sm:text-base">Database Preview</h3>
+                        <span id="admin-total-count" class="bg-blue-500/20 text-blue-300 text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full border border-blue-500/30">
+                            0 Records
+                        </span>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs sm:text-sm whitespace-nowrap">
+                            <thead class="bg-slate-900/80 text-slate-400 font-bold uppercase tracking-widest">
+                                <tr>
+                                    <th class="py-3 px-5 sm:px-6 w-1/4">Student ID</th>
+                                    <th class="py-3 px-5 sm:px-6 w-1/2">Participant Name</th>
+                                    <th class="py-3 px-5 sm:px-6 w-1/4">Assigned Team</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-table-body" class="divide-y divide-slate-800/50">
+                                <!-- Data injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="admin-table-footer" class="bg-slate-900/80 py-3 px-6 text-center text-xs text-slate-500 font-medium hidden border-t border-slate-800">
+                        Showing top 10 of <span id="admin-table-total" class="text-slate-300">0</span> records.
+                    </div>
+                </div>
+
+                <!-- Clear Data -->
+                <div class="mt-6 flex justify-center sm:justify-end">
+                    <button id="clear-data-btn" class="flex items-center space-x-2 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all hidden active:scale-[0.98]">
+                        <i class="ph-bold ph-trash text-base sm:text-lg"></i>
+                        <span>Wipe Database</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Firebase Setup ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD2Gg2rNuzMfFGqkFcSLS9BulDYG2N6hKE",
+            authDomain: "sti-sports-fest.firebaseapp.com",
+            projectId: "sti-sports-fest",
+            storageBucket: "sti-sports-fest.firebasestorage.app",
+            messagingSenderId: "299836757650",
+            appId: "1:299836757650:web:b0b0a42ee778152e7e384b"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        let currentUser = null;
+
+        // --- State ---
+        let students = [];
+        let teamLinks = {}; // Pulled dynamically from Firestore
+        let searchQuery = '';
+        let selectedColor = null;
+
+        // --- TEAM CONFIGURATION ---
+        const teamColors = [
+            { name: 'Black', bgClass: 'bg-team-black', textClass: 'text-slate-100', borderClass: 'border-slate-500' },
+            { name: 'Pink', bgClass: 'bg-team-pink', textClass: 'text-pink-100', borderClass: 'border-pink-500' },
+            { name: 'Blue', bgClass: 'bg-team-blue', textClass: 'text-blue-100', borderClass: 'border-blue-500' },
+            { name: 'Green', bgClass: 'bg-team-green', textClass: 'text-green-100', borderClass: 'border-green-500' },
+            { name: 'Red', bgClass: 'bg-team-red', textClass: 'text-red-100', borderClass: 'border-red-500' },
+            { name: 'Violet', bgClass: 'bg-team-violet', textClass: 'text-violet-100', borderClass: 'border-violet-500' },
+            { name: 'Orange', bgClass: 'bg-team-orange', textClass: 'text-orange-100', borderClass: 'border-orange-500' }
+        ];
+
+        // --- DOM Elements ---
+        const flagsContainer = document.getElementById('flags-container');
+        const studentsContainer = document.getElementById('students-container');
+        const searchInput = document.getElementById('search-input');
+        const clearFilterBtn = document.getElementById('clear-filter-btn');
+        const resultsHeader = document.getElementById('results-header');
+        const resultsTitle = document.getElementById('results-title');
+        const resultsCount = document.getElementById('results-count');
+        const resultsSubtitle = document.getElementById('results-subtitle');
+        const messengerBtnContainer = document.getElementById('messenger-btn-container');
+        const brandLogo = document.getElementById('brand-logo');
+        
+        const adminModal = document.getElementById('admin-modal');
+        const adminModalContent = document.getElementById('admin-modal-content');
+        const adminLinksContainer = document.getElementById('admin-links-container');
+        const saveLinksBtn = document.getElementById('save-links-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const csvUpload = document.getElementById('csv-upload');
+        const adminTableBody = document.getElementById('admin-table-body');
+        const adminTableFooter = document.getElementById('admin-table-footer');
+        const adminTableTotal = document.getElementById('admin-table-total');
+        const adminTotalCount = document.getElementById('admin-total-count');
+        const clearDataBtn = document.getElementById('clear-data-btn');
+
+        // --- Init & Auth ---
+        async function init() {
+            renderFlags();
+            renderAdminLinks();
+            
+            // Initial loading state
+            studentsContainer.innerHTML = `
+                <div class="col-span-full py-24 flex flex-col items-center justify-center text-center animate-pulse">
+                    <i class="ph-fill ph-database text-5xl text-slate-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-slate-400">Connecting to Cloud Database...</h3>
+                </div>
+            `;
+
+            // Initialize Authentication
+            const initAuth = async () => {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (error) {
+                        await signInAnonymously(auth);
+                    }
+                } else {
+                    await signInAnonymously(auth);
+                }
+            };
+            
+            await initAuth();
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                setupRealtimeListener();
+            } else {
+                currentUser = null;
+            }
+        });
+
+        function setupRealtimeListener() {
+            if (!currentUser) return;
+            
+            // Listen to Students Roster
+            const rosterDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'database', 'roster');
+            onSnapshot(rosterDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    students = docSnap.data().students || [];
+                } else {
+                    students = [];
+                }
+                updateUI();
+                updateAdminTable();
+            }, (error) => {
+                console.error("Firestore listening error: ", error);
+                studentsContainer.innerHTML = `
+                    <div class="col-span-full py-16 text-center">
+                        <p class="text-red-400 font-bold">Failed to connect to database.</p>
+                    </div>
+                `;
+            });
+
+            // Listen to Settings (Team Links)
+            const settingsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'database', 'settings');
+            onSnapshot(settingsDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    teamLinks = docSnap.data().teamLinks || {};
+                } else {
+                    teamLinks = {};
+                }
+                renderAdminLinks();
+                updateUI(); // Re-render in case currently selected team's link was updated
+            }, (error) => {
+                console.error("Firestore settings listening error: ", error);
+            });
+        }
+
+        // --- Render Team Flags ---
+        function renderFlags() {
+            flagsContainer.innerHTML = '';
+            
+            teamColors.forEach((colorObj, index) => {
+                const isSelected = selectedColor === colorObj.name.toLowerCase();
+                
+                const flagEl = document.createElement('div');
+                flagEl.className = `flex-none snap-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-between p-2 pb-0 w-[80px] h-[110px] sm:w-[95px] sm:h-[125px] rounded-xl border border-white/10 ${colorObj.bgClass} text-white animate-slide-up shadow-lg active:scale-95 lg:hover:shadow-2xl`;
+                flagEl.style.animationDelay = `${index * 0.05}s`;
+                
+                if (isSelected) {
+                    flagEl.classList.add('flag-selected');
+                    flagEl.querySelector('i')?.classList.add('animate-pulseGlow');
+                } else {
+                    flagEl.classList.add('opacity-85', 'lg:hover:opacity-100', 'lg:hover:-translate-y-2');
+                }
+                
+                flagEl.addEventListener('click', () => {
+                    selectedColor = isSelected ? null : colorObj.name.toLowerCase();
+                    searchQuery = ''; 
+                    searchInput.value = '';
+                    updateUI();
+                    
+                    if (window.innerWidth < 1024 && selectedColor) {
+                         setTimeout(() => {
+                             window.scrollTo({top: document.getElementById('results-header').offsetTop - 20, behavior: 'smooth'});
+                         }, 100);
+                    }
+                });
+
+                flagEl.innerHTML = `
+                    <i class="ph-fill ph-fire text-2xl sm:text-3xl mt-1 sm:mt-2 transition-all ${isSelected ? 'animate-pulseGlow text-yellow-300' : ''}"></i>
+                    <div class="text-center leading-tight mt-1 flex-grow flex flex-col justify-center w-full px-1">
+                        <div class="text-[5px] sm:text-[6px] font-bold tracking-widest uppercase opacity-80 whitespace-nowrap">✧ MARIKINA ✧</div>
+                        <div class="text-[7px] sm:text-[8px] font-black tracking-widest mt-[2px] whitespace-nowrap">SPORTS FEST</div>
+                    </div>
+                    <div class="flex items-end justify-center w-full mt-1 mb-[3px] space-x-[2px]">
+                        <div class="bg-white/90 text-slate-900 w-[30%] h-3 sm:h-4 flex items-center justify-center rounded-[2px] shield-bottom shadow-inner">
+                            <i class="ph-bold ph-person-simple-run text-[6px] sm:text-[8px]"></i>
+                        </div>
+                        <div class="bg-white/90 text-slate-900 w-[40%] h-5 sm:h-6 flex items-center justify-center font-black text-[7px] sm:text-[9px] rounded-[2px] shield-bottom shadow-inner">
+                            2026
+                        </div>
+                        <div class="bg-white/90 text-slate-900 w-[30%] h-3 sm:h-4 flex items-center justify-center rounded-[2px] shield-bottom shadow-inner">
+                            <i class="ph-bold ph-person-simple-run text-[6px] sm:text-[8px]"></i>
+                        </div>
+                    </div>
+                `;
+                
+                flagsContainer.appendChild(flagEl);
+            });
+        }
+
+        function getStyleForColor(colorName) {
+            const normalized = (colorName || '').trim().toLowerCase();
+            const found = teamColors.find(c => c.name.toLowerCase() === normalized);
+            return found || teamColors[0];
+        }
+
+        // --- Render Admin Link Config ---
+        function renderAdminLinks() {
+            adminLinksContainer.innerHTML = '';
+            teamColors.forEach(color => {
+                const key = color.name.toLowerCase();
+                const currentVal = teamLinks[key] || '';
+                
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label class="block text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1">
+                        <span class="inline-block w-2 h-2 rounded-full ${color.bgClass} mr-1"></span>${color.name}
+                    </label>
+                    <input type="url" id="link-input-${key}" value="${currentVal}" class="block w-full px-3 py-2 border border-slate-600/50 rounded-lg bg-slate-800/60 text-white placeholder-slate-500 focus:outline-none focus:border-yellow-400 transition-all text-xs sm:text-sm shadow-inner" placeholder="https://m.me/j/..." />
+                `;
+                adminLinksContainer.appendChild(div);
+            });
+        }
+
+        // --- Update UI View ---
+        function updateUI() {
+            renderFlags();
+
+            if (selectedColor || searchQuery) {
+                clearFilterBtn.classList.remove('hidden');
+                clearFilterBtn.classList.add('animate-fade-in');
+            } else {
+                clearFilterBtn.classList.add('hidden');
+            }
+
+            let filtered = students;
+            
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                filtered = filtered.filter(s => 
+                    s.name.toLowerCase().includes(query) || 
+                    (s.studentId && s.studentId.toLowerCase().includes(query))
+                );
+                resultsTitle.innerHTML = `Search: <span class="text-yellow-400">"${searchQuery}"</span>`;
+                resultsSubtitle.textContent = 'Live tracking matching names & IDs...';
+                messengerBtnContainer.classList.add('hidden'); // Hide messenger button on general search
+            } else if (selectedColor) {
+                filtered = filtered.filter(s => s.color.toLowerCase() === selectedColor);
+                resultsTitle.innerHTML = `<span class="capitalize text-yellow-400">${selectedColor}</span> Team`;
+                resultsSubtitle.textContent = 'Verified Official Roster';
+                
+                // Show Messenger Button from dynamic DB links
+                const colorConfig = getStyleForColor(selectedColor);
+                const teamChatUrl = teamLinks[selectedColor];
+                
+                if (teamChatUrl && teamChatUrl.trim() !== '') {
+                    messengerBtnContainer.innerHTML = `
+                        <a href="${teamChatUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#00B2FF] to-[#006AFF] hover:from-[#0099FF] hover:to-[#005CE6] text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-95">
+                            <i class="ph-fill ph-messenger-logo text-lg sm:text-xl"></i>
+                            <span>Join ${colorConfig.name} Group Chat</span>
+                        </a>
+                    `;
+                    messengerBtnContainer.classList.remove('hidden');
+                } else {
+                    messengerBtnContainer.classList.add('hidden');
+                }
+            }
+
+            if (searchQuery || selectedColor) {
+                resultsHeader.classList.remove('hidden');
+                resultsCount.textContent = filtered.length;
+                renderStudentList(filtered);
+            } else {
+                resultsHeader.classList.add('hidden');
+                studentsContainer.innerHTML = `
+                    <div class="col-span-full py-16 sm:py-24 flex flex-col items-center justify-center text-center animate-slide-up">
+                        <div class="bg-slate-800/50 p-6 sm:p-8 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.3)] border border-slate-700 mb-6 relative group">
+                            <i class="ph-fill ph-radar text-5xl sm:text-6xl text-slate-400 lg:group-hover:text-yellow-400 transition-colors duration-500 animate-[spin_4s_linear_infinite]"></i>
+                            <div class="absolute inset-0 border-2 border-slate-600 rounded-full animate-ping opacity-20"></div>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 tracking-wide">Awaiting Search</h3>
+                        <p class="text-slate-400 text-sm sm:text-base max-w-xs sm:max-w-sm leading-relaxed px-4">Type an athlete's name, ID, or tap a team flag to view the official roster.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderStudentList(filteredStudents) {
+            studentsContainer.innerHTML = '';
+
+            if (filteredStudents.length === 0) {
+                studentsContainer.innerHTML = `
+                    <div class="col-span-full py-16 flex flex-col items-center justify-center text-center glass-card rounded-2xl border border-slate-700 border-dashed animate-fade-in mx-2 lg:mx-0">
+                        <div class="bg-slate-800 p-5 rounded-full mb-4 shadow-inner">
+                            <i class="ph-fill ph-ghost text-4xl text-slate-500"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white tracking-wide">No matching athletes</h3>
+                        <p class="text-slate-400 text-sm mt-1">Try adjusting your filters or search query.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredStudents.forEach((student, index) => {
+                const colorObj = getStyleForColor(student.color);
+                const el = document.createElement('div');
+                
+                el.className = `relative glass-card rounded-2xl p-4 sm:p-5 overflow-hidden group transition-all duration-300 lg:hover:-translate-y-1 lg:hover:shadow-[0_10px_20px_rgba(0,0,0,0.4)] lg:hover:border-white/20 animate-slide-up mx-1 sm:mx-0`;
+                el.style.animationDelay = `${Math.min(index * 0.05, 0.5)}s`; 
+                
+                el.innerHTML = `
+                    <div class="absolute -right-10 -top-10 w-24 h-24 sm:w-32 sm:h-32 rounded-full ${colorObj.bgClass} opacity-20 lg:group-hover:opacity-40 filter blur-xl sm:blur-2xl transition-opacity duration-500 pointer-events-none"></div>
+                    <div class="absolute -bottom-4 -right-2 text-6xl sm:text-8xl opacity-[0.03] lg:group-hover:opacity-[0.08] transition-all duration-500 lg:group-hover:scale-110 lg:group-hover:-rotate-12 ${colorObj.textClass} pointer-events-none">
+                        <i class="ph-fill ph-fire"></i>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 sm:gap-4 relative z-10">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-lg ${colorObj.bgClass} border border-white/10 flex-shrink-0">
+                            <i class="ph-fill ph-user text-xl sm:text-2xl text-white"></i>
+                        </div>
+                        
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-base sm:text-lg font-bold text-white leading-tight truncate w-full">${student.name}</h4>
+                            ${student.studentId && student.studentId !== 'N/A' ? `<div class="text-[10px] sm:text-xs text-slate-400 font-medium mt-0.5 tracking-wider">ID: ${student.studentId}</div>` : ''}
+                            <div class="flex items-center gap-2 mt-1 sm:mt-1.5">
+                                <span class="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded text-white bg-white/10 backdrop-blur-sm border border-white/5 shadow-sm">
+                                    <i class="ph-fill ph-flag text-yellow-400"></i>
+                                    ${student.color}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                studentsContainer.appendChild(el);
+            });
+        }
+
+        // --- Event Handlers ---
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            if (searchQuery.length > 0) selectedColor = null; 
+            updateUI();
+        });
+
+        clearFilterBtn.addEventListener('click', () => {
+            searchQuery = '';
+            selectedColor = null;
+            searchInput.value = '';
+            updateUI();
+        });
+
+        function openAdminModal() {
+            adminModal.classList.remove('hidden');
+            setTimeout(() => {
+                adminModal.classList.remove('opacity-0');
+                adminModalContent.classList.remove('scale-95');
+                adminModalContent.classList.add('scale-100');
+            }, 10);
+            updateAdminTable();
+        }
+
+        function closeAdminModal() {
+            adminModal.classList.add('opacity-0');
+            adminModalContent.classList.remove('scale-100');
+            adminModalContent.classList.add('scale-95');
+            setTimeout(() => { adminModal.classList.add('hidden'); }, 300);
+        }
+
+        let tapCount = 0;
+        let tapTimeout;
+        brandLogo.addEventListener('click', () => {
+            tapCount++;
+            clearTimeout(tapTimeout);
+            if (tapCount >= 3) {
+                openAdminModal();
+                tapCount = 0;
+            }
+            tapTimeout = setTimeout(() => tapCount = 0, 800);
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'i') {
+                e.preventDefault();
+                openAdminModal();
+            }
+        });
+
+        closeModalBtn.addEventListener('click', closeAdminModal);
+        
+        // --- Save Dynamic Links ---
+        saveLinksBtn.addEventListener('click', async () => {
+            if (!currentUser) return;
+            
+            const newLinks = {};
+            teamColors.forEach(color => {
+                const key = color.name.toLowerCase();
+                const input = document.getElementById(`link-input-${key}`);
+                if (input && input.value.trim()) {
+                    newLinks[key] = input.value.trim();
+                }
+            });
+
+            const originalHtml = saveLinksBtn.innerHTML;
+            saveLinksBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-lg"></i> <span class="text-sm">Saving...</span>`;
+
+            try {
+                const settingsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'database', 'settings');
+                await setDoc(settingsDocRef, { teamLinks: newLinks }, { merge: true });
+                
+                saveLinksBtn.innerHTML = `<i class="ph-bold ph-check text-lg"></i> <span class="text-sm">Saved!</span>`;
+                saveLinksBtn.classList.replace('bg-purple-600', 'bg-green-600');
+                saveLinksBtn.classList.replace('hover:bg-purple-500', 'hover:bg-green-500');
+            } catch (error) {
+                console.error("Error saving links:", error);
+                saveLinksBtn.innerHTML = `<i class="ph-bold ph-x text-lg"></i> <span class="text-sm">Error</span>`;
+                saveLinksBtn.classList.replace('bg-purple-600', 'bg-red-600');
+                saveLinksBtn.classList.replace('hover:bg-purple-500', 'hover:bg-red-500');
+            }
+
+            setTimeout(() => {
+                saveLinksBtn.innerHTML = originalHtml;
+                saveLinksBtn.classList.remove('bg-green-600', 'hover:bg-green-500', 'bg-red-600', 'hover:bg-red-500');
+                saveLinksBtn.classList.add('bg-purple-600', 'hover:bg-purple-500');
+            }, 2000);
+        });
+
+        // --- CSV Logic & Database Write ---
+        downloadBtn.addEventListener('click', () => {
+            const csvContent = "StudentID,Name,Color\n26-0001,Juan Dela Cruz,Red\n26-0002,Maria Clara,Blue\n26-0003,Jose Rizal,Black\n26-0004,Andres Bonifacio,Green\n26-0005,Gabriela Silang,Pink\n26-0006,Apolinario Mabini,Violet\n26-0007,Emilio Aguinaldo,Orange";
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'STI_Marikina_Teams_Template.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        csvUpload.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const text = e.target.result;
+                const lines = text.split(/\r?\n/);
+                const newStudents = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (line) {
+                        const parts = line.split(',');
+                        if (parts.length >= 2) {
+                            let studentId = '';
+                            let name = '';
+                            let color = '';
+
+                            if (parts.length === 2) {
+                                name = parts[0].trim().replace(/^["']|["']$/g, '');
+                                color = parts[1].trim().replace(/^["']|["']$/g, '');
+                            } else {
+                                studentId = parts[0].trim().replace(/^["']|["']$/g, '');
+                                color = parts[parts.length - 1].trim().replace(/^["']|["']$/g, '');
+                                name = parts.slice(1, parts.length - 1).join(',').trim().replace(/^["']|["']$/g, '');
+                            }
+
+                            const validColors = teamColors.map(c => c.name.toLowerCase());
+                            const normalizedColor = color.toLowerCase();
+                            const finalColor = validColors.includes(normalizedColor) ? normalizedColor : 'black';
+
+                            if (name) {
+                                newStudents.push({
+                                    id: Date.now() + Math.random(),
+                                    studentId: studentId || 'N/A',
+                                    name: name,
+                                    color: finalColor
+                                });
+                            }
+                        }
+                    }
+                }
+                
+                csvUpload.value = ''; 
+                
+                if (!currentUser) {
+                    alert("Not authenticated to database yet. Please try again in a moment.");
+                    return;
+                }
+
+                // UI Feedback: Saving
+                const btn = document.querySelector('label[for="csv-upload"] span');
+                const originalText = btn.textContent;
+                btn.textContent = `Saving to Cloud...`;
+                btn.parentElement.classList.add('bg-blue-800');
+
+                try {
+                    // Overwrite the single document array containing all students
+                    const rosterDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'database', 'roster');
+                    await setDoc(rosterDocRef, { students: newStudents });
+                    
+                    btn.textContent = `Success! (${newStudents.length} added)`;
+                    btn.parentElement.classList.remove('bg-blue-800');
+                    btn.parentElement.classList.add('bg-green-600', 'border-green-400');
+                } catch (error) {
+                    console.error("Error saving roster:", error);
+                    btn.textContent = `Error Saving`;
+                    btn.parentElement.classList.remove('bg-blue-800');
+                    btn.parentElement.classList.add('bg-red-600');
+                }
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.parentElement.classList.remove('bg-green-600', 'border-green-400', 'bg-red-600', 'bg-blue-800');
+                }, 3000);
+            };
+            reader.readAsText(file);
+        });
+
+        clearDataBtn.addEventListener('click', async () => {
+            if (confirm("🚨 WARNING: Permanently clear the live cloud database? This affects all users.")) {
+                if (!currentUser) return;
+                
+                try {
+                    const rosterDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'database', 'roster');
+                    await deleteDoc(rosterDocRef);
+                } catch (error) {
+                    console.error("Error clearing database:", error);
+                }
+            }
+        });
+
+        function updateAdminTable() {
+            adminTotalCount.textContent = `${students.length} Records`;
+            
+            if (students.length > 0) {
+                clearDataBtn.classList.remove('hidden');
+                adminTableBody.innerHTML = '';
+                
+                const previewList = students.slice(0, 10);
+                previewList.forEach(student => {
+                    const colorObj = getStyleForColor(student.color);
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-800/50 transition-colors group';
+                    tr.innerHTML = `
+                        <td class="py-3 px-5 sm:px-6 text-slate-400 text-xs tracking-wider">${student.studentId || 'N/A'}</td>
+                        <td class="py-3 px-5 sm:px-6 font-semibold text-white truncate max-w-[150px] sm:max-w-[200px]">${student.name}</td>
+                        <td class="py-3 px-5 sm:px-6">
+                            <span class="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[9px] sm:text-[10px] font-bold uppercase tracking-widest ${colorObj.bgClass} text-white shadow-sm border border-white/10">
+                                <i class="ph-fill ph-fire"></i>
+                                ${student.color}
+                            </span>
+                        </td>
+                    `;
+                    adminTableBody.appendChild(tr);
+                });
+
+                if (students.length > 10) {
+                    adminTableFooter.classList.remove('hidden');
+                    adminTableTotal.textContent = students.length;
+                } else {
+                    adminTableFooter.classList.add('hidden');
+                }
+            } else {
+                clearDataBtn.classList.add('hidden');
+                adminTableFooter.classList.add('hidden');
+                adminTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="p-8 sm:p-12 text-center text-slate-500">
+                            <div class="flex flex-col items-center justify-center">
+                                <i class="ph-fill ph-database text-4xl sm:text-5xl mb-3 opacity-20"></i>
+                                <p class="text-xs sm:text-sm">Database is empty. Import a CSV to populate.</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</body>
+</html>

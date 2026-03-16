@@ -18,7 +18,6 @@
                 extend: {
                     colors: {
                         team: {
-                            black: '#374151',     
                             pink: '#db2777',   
                             blue: '#2563eb',      
                             green: '#16a34a',     
@@ -147,8 +146,17 @@
                         type="text"
                         id="search-input"
                         class="block w-full pl-12 pr-4 py-3 sm:py-4 border border-slate-600/50 rounded-xl sm:rounded-2xl leading-5 bg-slate-800/60 text-white placeholder-slate-500 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all text-base sm:text-lg shadow-inner backdrop-blur-md"
-                        placeholder="Enter name or Student ID..."
+                        placeholder="Type Name or Student ID..."
                     />
+                </div>
+                
+                <!-- Privacy Notice -->
+                <div class="mt-6 p-4 bg-slate-800/30 border border-slate-700/50 border-dashed rounded-xl text-slate-400 text-xs sm:text-sm leading-relaxed">
+                    <div class="flex items-center gap-2 mb-2 text-yellow-400">
+                        <i class="ph-fill ph-shield-check text-lg"></i>
+                        <span class="font-bold tracking-wide uppercase text-[10px] sm:text-xs">Secure GC Access</span>
+                    </div>
+                    <p>Tap your name card in the list below to verify your identity and get your team's Group Chat link.</p>
                 </div>
             </div>
 
@@ -177,13 +185,8 @@
                 <div class="flex-1">
                     <h3 class="text-2xl sm:text-3xl font-black text-white drop-shadow-md" id="results-title">Search Results</h3>
                     <p class="text-slate-400 text-xs sm:text-sm mt-1 font-medium" id="results-subtitle">Showing matching participants</p>
-                    
-                    <!-- Messenger Button Container -->
-                    <div id="messenger-btn-container" class="mt-4 hidden animate-slide-up">
-                        <!-- Button injected via JS when a specific team is selected -->
-                    </div>
                 </div>
-                <div class="glass-card px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl flex items-center gap-2 font-bold text-yellow-400 ml-4 mt-1">
+                <div class="glass-card px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl flex items-center gap-2 font-bold text-yellow-400 ml-4 mt-1 flex-shrink-0">
                     <i class="ph-fill ph-users text-lg sm:text-xl"></i>
                     <span id="results-count" class="text-base sm:text-lg">0</span>
                 </div>
@@ -198,12 +201,61 @@
                         <div class="absolute inset-0 border-2 border-slate-600 rounded-full animate-ping opacity-20"></div>
                     </div>
                     <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 tracking-wide">Awaiting Search</h3>
-                    <p class="text-slate-400 text-sm sm:text-base max-w-xs sm:max-w-sm leading-relaxed px-4">Type an athlete's name, ID, or tap a team flag to view the official roster.</p>
+                    <p class="text-slate-400 text-sm sm:text-base max-w-xs sm:max-w-sm leading-relaxed px-4">Type your name or ID in the search box, or select a team flag to view the roster.</p>
                 </div>
             </div>
 
         </div>
     </main>
+
+    <!-- Student Verification Modal Overlay -->
+    <div id="verify-modal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-50 flex items-center justify-center p-4 transition-all opacity-0">
+        <div class="glass-card rounded-2xl sm:rounded-3xl w-full max-w-md overflow-hidden flex flex-col border border-slate-700 shadow-2xl transform scale-95 transition-all" id="verify-modal-content">
+            
+            <div class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-5 sm:px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <i class="ph-fill ph-shield-check text-xl sm:text-2xl"></i>
+                    <h2 class="text-base sm:text-lg font-bold uppercase tracking-wide">Identity Verification</h2>
+                </div>
+                <button id="close-verify-modal-btn" class="text-white hover:text-blue-200 transition-colors p-1.5 rounded-full hover:bg-white/10 active:scale-95">
+                    <i class="ph-bold ph-x text-lg sm:text-xl"></i>
+                </button>
+            </div>
+
+            <div class="p-5 sm:p-6 bg-slate-900/80">
+                <p class="text-slate-300 text-sm mb-4">To get the Group Chat link for <strong id="verify-student-name" class="text-white font-bold">Name</strong>, please verify your identity.</p>
+                
+                <div id="verify-form-container">
+                    <label class="block text-[10px] sm:text-xs font-bold text-slate-400 mb-2 uppercase tracking-widest">Enter Exact Student ID</label>
+                    <input
+                        type="text"
+                        id="verify-input"
+                        class="block w-full px-4 py-3 border border-slate-600/50 rounded-xl leading-5 bg-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all mb-1"
+                        placeholder="e.g. 26-0001 (or Full Name if no ID)"
+                    />
+                    <p id="verify-error" class="text-red-400 text-xs font-medium h-4 hidden mt-1">Invalid Student ID or Name.</p>
+
+                    <button id="verify-submit-btn" class="w-full mt-4 flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-500 text-white py-3 px-4 rounded-xl transition-all font-bold shadow-lg active:scale-[0.98]">
+                        <i class="ph-bold ph-lock-key-open text-lg"></i>
+                        <span>Verify & Get Link</span>
+                    </button>
+                </div>
+
+                <!-- Success Container (Hidden by default) -->
+                <div id="verify-success-container" class="hidden flex-col items-center justify-center py-4 animate-fade-in text-center">
+                    <div class="w-16 h-16 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mb-3 border border-green-500/30">
+                        <i class="ph-fill ph-check-circle text-3xl"></i>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-1">Verification Successful</h3>
+                    <p class="text-slate-400 text-xs mb-5">You may now join your team's official group chat.</p>
+                    
+                    <div id="verify-gc-link-container" class="w-full">
+                        <!-- GC Link injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Admin Modal Overlay -->
     <div id="admin-modal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-50 flex items-center justify-center p-4 transition-all opacity-0">
@@ -277,31 +329,17 @@
                     </div>
                 </div>
 
-                <!-- Database Preview -->
+                <!-- Database Preview by Team -->
                 <div class="glass-card rounded-xl sm:rounded-2xl overflow-hidden border border-slate-700">
                     <div class="px-5 sm:px-6 py-4 border-b border-slate-700/50 flex items-center justify-between bg-slate-800/50">
-                        <h3 class="font-bold text-white text-sm sm:text-base">Database Preview</h3>
+                        <h3 class="font-bold text-white text-sm sm:text-base">Database Preview (By Team)</h3>
                         <span id="admin-total-count" class="bg-blue-500/20 text-blue-300 text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full border border-blue-500/30">
                             0 Records
                         </span>
                     </div>
                     
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs sm:text-sm whitespace-nowrap">
-                            <thead class="bg-slate-900/80 text-slate-400 font-bold uppercase tracking-widest">
-                                <tr>
-                                    <th class="py-3 px-5 sm:px-6 w-1/4">Student ID</th>
-                                    <th class="py-3 px-5 sm:px-6 w-1/2">Participant Name</th>
-                                    <th class="py-3 px-5 sm:px-6 w-1/4">Assigned Team</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-table-body" class="divide-y divide-slate-800/50">
-                                <!-- Data injected by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="admin-table-footer" class="bg-slate-900/80 py-3 px-6 text-center text-xs text-slate-500 font-medium hidden border-t border-slate-800">
-                        Showing top 10 of <span id="admin-table-total" class="text-slate-300">0</span> records.
+                    <div id="admin-teams-container" class="p-4 sm:p-6 space-y-6 bg-slate-900/30">
+                        <!-- Individual Team Tables injected by JS -->
                     </div>
                 </div>
 
@@ -340,13 +378,13 @@
 
         // --- State ---
         let students = [];
-        let teamLinks = {}; // Pulled dynamically from Firestore
+        let teamLinks = {}; 
         let searchQuery = '';
         let selectedColor = null;
+        let studentToVerify = null; // Track which student is being verified
 
         // --- TEAM CONFIGURATION ---
         const teamColors = [
-            { name: 'Black', bgClass: 'bg-team-black', textClass: 'text-slate-100', borderClass: 'border-slate-500' },
             { name: 'Pink', bgClass: 'bg-team-pink', textClass: 'text-pink-100', borderClass: 'border-pink-500' },
             { name: 'Blue', bgClass: 'bg-team-blue', textClass: 'text-blue-100', borderClass: 'border-blue-500' },
             { name: 'Green', bgClass: 'bg-team-green', textClass: 'text-green-100', borderClass: 'border-green-500' },
@@ -364,21 +402,31 @@
         const resultsTitle = document.getElementById('results-title');
         const resultsCount = document.getElementById('results-count');
         const resultsSubtitle = document.getElementById('results-subtitle');
-        const messengerBtnContainer = document.getElementById('messenger-btn-container');
         const brandLogo = document.getElementById('brand-logo');
         
+        // Admin DOM
         const adminModal = document.getElementById('admin-modal');
         const adminModalContent = document.getElementById('admin-modal-content');
         const adminLinksContainer = document.getElementById('admin-links-container');
+        const adminTeamsContainer = document.getElementById('admin-teams-container');
         const saveLinksBtn = document.getElementById('save-links-btn');
         const closeModalBtn = document.getElementById('close-modal-btn');
         const downloadBtn = document.getElementById('download-btn');
         const csvUpload = document.getElementById('csv-upload');
-        const adminTableBody = document.getElementById('admin-table-body');
-        const adminTableFooter = document.getElementById('admin-table-footer');
-        const adminTableTotal = document.getElementById('admin-table-total');
         const adminTotalCount = document.getElementById('admin-total-count');
         const clearDataBtn = document.getElementById('clear-data-btn');
+
+        // Verification Modal DOM
+        const verifyModal = document.getElementById('verify-modal');
+        const verifyModalContent = document.getElementById('verify-modal-content');
+        const closeVerifyModalBtn = document.getElementById('close-verify-modal-btn');
+        const verifyStudentName = document.getElementById('verify-student-name');
+        const verifyInput = document.getElementById('verify-input');
+        const verifyError = document.getElementById('verify-error');
+        const verifySubmitBtn = document.getElementById('verify-submit-btn');
+        const verifyFormContainer = document.getElementById('verify-form-container');
+        const verifySuccessContainer = document.getElementById('verify-success-container');
+        const verifyGcLinkContainer = document.getElementById('verify-gc-link-container');
 
         // --- Init & Auth ---
         async function init() {
@@ -449,10 +497,16 @@
                     teamLinks = {};
                 }
                 renderAdminLinks();
-                updateUI(); // Re-render in case currently selected team's link was updated
+                // If modal is open and successful, we might need to update link but UX is fine if we leave it static until reopened
             }, (error) => {
                 console.error("Firestore settings listening error: ", error);
             });
+        }
+
+        function getStyleForColor(colorName) {
+            const normalized = (colorName || '').trim().toLowerCase();
+            const found = teamColors.find(c => c.name.toLowerCase() === normalized);
+            return found || teamColors[0];
         }
 
         // --- Render Team Flags ---
@@ -509,12 +563,6 @@
             });
         }
 
-        function getStyleForColor(colorName) {
-            const normalized = (colorName || '').trim().toLowerCase();
-            const found = teamColors.find(c => c.name.toLowerCase() === normalized);
-            return found || teamColors[0];
-        }
-
         // --- Render Admin Link Config ---
         function renderAdminLinks() {
             adminLinksContainer.innerHTML = '';
@@ -544,43 +592,44 @@
                 clearFilterBtn.classList.add('hidden');
             }
 
-            let filtered = students;
+            let filtered = []; 
             
             if (searchQuery) {
                 const query = searchQuery.toLowerCase();
-                filtered = filtered.filter(s => 
-                    s.name.toLowerCase().includes(query) || 
-                    (s.studentId && s.studentId.toLowerCase().includes(query))
-                );
+                
+                // Allow partial matching so users can find themselves easily
+                filtered = students.filter(s => {
+                    const matchName = s.name.toLowerCase().includes(query);
+                    const matchId = s.studentId && s.studentId.toLowerCase().includes(query);
+                    return matchName || matchId;
+                });
+                
                 resultsTitle.innerHTML = `Search: <span class="text-yellow-400">"${searchQuery}"</span>`;
-                resultsSubtitle.textContent = 'Live tracking matching names & IDs...';
-                messengerBtnContainer.classList.add('hidden'); // Hide messenger button on general search
+                resultsSubtitle.innerHTML = 'Tap your name card to verify and join your Group Chat.';
+                
             } else if (selectedColor) {
-                filtered = filtered.filter(s => s.color.toLowerCase() === selectedColor);
+                filtered = students.filter(s => s.color.toLowerCase() === selectedColor);
                 resultsTitle.innerHTML = `<span class="capitalize text-yellow-400">${selectedColor}</span> Team`;
-                resultsSubtitle.textContent = 'Verified Official Roster';
-                
-                // Show Messenger Button from dynamic DB links
-                const colorConfig = getStyleForColor(selectedColor);
-                const teamChatUrl = teamLinks[selectedColor];
-                
-                if (teamChatUrl && teamChatUrl.trim() !== '') {
-                    messengerBtnContainer.innerHTML = `
-                        <a href="${teamChatUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#00B2FF] to-[#006AFF] hover:from-[#0099FF] hover:to-[#005CE6] text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-95">
-                            <i class="ph-fill ph-messenger-logo text-lg sm:text-xl"></i>
-                            <span>Join ${colorConfig.name} Group Chat</span>
-                        </a>
-                    `;
-                    messengerBtnContainer.classList.remove('hidden');
-                } else {
-                    messengerBtnContainer.classList.add('hidden');
-                }
+                resultsSubtitle.innerHTML = 'Official Roster. Tap your name to join the GC.';
             }
 
             if (searchQuery || selectedColor) {
                 resultsHeader.classList.remove('hidden');
-                resultsCount.textContent = filtered.length;
-                renderStudentList(filtered);
+                resultsCount.textContent = filtered.length; 
+                
+                if (filtered.length > 0) {
+                    renderStudentList(filtered);
+                } else {
+                     studentsContainer.innerHTML = `
+                        <div class="col-span-full py-16 flex flex-col items-center justify-center text-center glass-card rounded-2xl border border-slate-700 border-dashed animate-fade-in mx-2 lg:mx-0">
+                            <div class="bg-slate-800 p-5 rounded-full mb-4 shadow-inner">
+                                <i class="ph-fill ph-magnifying-glass text-4xl text-slate-500"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-white tracking-wide">No athletes found</h3>
+                            <p class="text-slate-400 text-sm mt-1 max-w-sm">Please check the spelling of your name or Student ID.</p>
+                        </div>
+                    `;
+                }
             } else {
                 resultsHeader.classList.add('hidden');
                 studentsContainer.innerHTML = `
@@ -590,7 +639,7 @@
                             <div class="absolute inset-0 border-2 border-slate-600 rounded-full animate-ping opacity-20"></div>
                         </div>
                         <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 tracking-wide">Awaiting Search</h3>
-                        <p class="text-slate-400 text-sm sm:text-base max-w-xs sm:max-w-sm leading-relaxed px-4">Type an athlete's name, ID, or tap a team flag to view the official roster.</p>
+                        <p class="text-slate-400 text-sm sm:text-base max-w-xs sm:max-w-sm leading-relaxed px-4">Type your name or ID in the search box to find your record, or click a team flag to view the roster.</p>
                     </div>
                 `;
             }
@@ -599,57 +648,149 @@
         function renderStudentList(filteredStudents) {
             studentsContainer.innerHTML = '';
 
-            if (filteredStudents.length === 0) {
-                studentsContainer.innerHTML = `
-                    <div class="col-span-full py-16 flex flex-col items-center justify-center text-center glass-card rounded-2xl border border-slate-700 border-dashed animate-fade-in mx-2 lg:mx-0">
-                        <div class="bg-slate-800 p-5 rounded-full mb-4 shadow-inner">
-                            <i class="ph-fill ph-ghost text-4xl text-slate-500"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-white tracking-wide">No matching athletes</h3>
-                        <p class="text-slate-400 text-sm mt-1">Try adjusting your filters or search query.</p>
-                    </div>
-                `;
-                return;
-            }
-
             filteredStudents.forEach((student, index) => {
                 const colorObj = getStyleForColor(student.color);
-                const el = document.createElement('div');
                 
-                el.className = `relative glass-card rounded-2xl p-4 sm:p-5 overflow-hidden group transition-all duration-300 lg:hover:-translate-y-1 lg:hover:shadow-[0_10px_20px_rgba(0,0,0,0.4)] lg:hover:border-white/20 animate-slide-up mx-1 sm:mx-0`;
+                const el = document.createElement('div');
+                el.className = `relative glass-card rounded-2xl p-4 sm:p-5 overflow-hidden group transition-all duration-300 animate-slide-up mx-1 sm:mx-0 border border-white/10 cursor-pointer hover:border-yellow-400/50 lg:hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(0,0,0,0.4)]`;
                 el.style.animationDelay = `${Math.min(index * 0.05, 0.5)}s`; 
                 
                 el.innerHTML = `
-                    <div class="absolute -right-10 -top-10 w-24 h-24 sm:w-32 sm:h-32 rounded-full ${colorObj.bgClass} opacity-20 lg:group-hover:opacity-40 filter blur-xl sm:blur-2xl transition-opacity duration-500 pointer-events-none"></div>
-                    <div class="absolute -bottom-4 -right-2 text-6xl sm:text-8xl opacity-[0.03] lg:group-hover:opacity-[0.08] transition-all duration-500 lg:group-hover:scale-110 lg:group-hover:-rotate-12 ${colorObj.textClass} pointer-events-none">
+                    <div class="absolute -right-10 -top-10 w-24 h-24 sm:w-32 sm:h-32 rounded-full ${colorObj.bgClass} opacity-20 lg:group-hover:opacity-40 filter blur-xl sm:blur-2xl transition-all duration-500 pointer-events-none"></div>
+                    <div class="absolute -bottom-4 -right-2 text-6xl sm:text-8xl opacity-[0.03] lg:group-hover:opacity-[0.08] lg:group-hover:scale-110 lg:group-hover:-rotate-12 transition-all duration-500 ${colorObj.textClass} pointer-events-none">
                         <i class="ph-fill ph-fire"></i>
                     </div>
                     
-                    <div class="flex items-center gap-3 sm:gap-4 relative z-10">
-                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-lg ${colorObj.bgClass} border border-white/10 flex-shrink-0">
+                    <div class="flex items-center gap-3 sm:gap-4 relative z-10 pointer-events-none">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-lg ${colorObj.bgClass} border border-white/10 flex-shrink-0 transition-colors duration-500">
                             <i class="ph-fill ph-user text-xl sm:text-2xl text-white"></i>
                         </div>
                         
                         <div class="flex-1 min-w-0">
                             <h4 class="text-base sm:text-lg font-bold text-white leading-tight truncate w-full">${student.name}</h4>
-                            ${student.studentId && student.studentId !== 'N/A' ? `<div class="text-[10px] sm:text-xs text-slate-400 font-medium mt-0.5 tracking-wider">ID: ${student.studentId}</div>` : ''}
-                            <div class="flex items-center gap-2 mt-1 sm:mt-1.5">
+                            <div class="flex items-center gap-2 mt-1 sm:mt-1.5 flex-wrap">
                                 <span class="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded text-white bg-white/10 backdrop-blur-sm border border-white/5 shadow-sm">
                                     <i class="ph-fill ph-flag text-yellow-400"></i>
-                                    ${student.color}
+                                    ${student.color} Team
+                                </span>
+                                <span class="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-blue-300 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 shadow-sm mt-1 sm:mt-0">
+                                    <i class="ph-bold ph-hand-pointing"></i> Tap to get GC
                                 </span>
                             </div>
                         </div>
                     </div>
                 `;
+                
+                // Add click listener to open verification modal
+                el.addEventListener('click', () => {
+                    openVerifyModal(student);
+                });
+
                 studentsContainer.appendChild(el);
             });
         }
 
+        // --- VERIFICATION MODAL LOGIC ---
+        function openVerifyModal(student) {
+            studentToVerify = student;
+            verifyStudentName.textContent = student.name;
+            verifyInput.value = '';
+            verifyError.classList.add('hidden');
+            
+            // Reset to form view
+            verifyFormContainer.classList.remove('hidden');
+            verifySuccessContainer.classList.add('hidden');
+            
+            verifyModal.classList.remove('hidden');
+            setTimeout(() => {
+                verifyModal.classList.remove('opacity-0');
+                verifyModalContent.classList.remove('scale-95');
+                verifyModalContent.classList.add('scale-100');
+            }, 10);
+            
+            // Focus input for better UX (slight delay to let modal animate)
+            setTimeout(() => { verifyInput.focus(); }, 300);
+        }
+
+        function closeVerifyModal() {
+            verifyModal.classList.add('opacity-0');
+            verifyModalContent.classList.remove('scale-100');
+            verifyModalContent.classList.add('scale-95');
+            setTimeout(() => { 
+                verifyModal.classList.add('hidden'); 
+                studentToVerify = null;
+            }, 300);
+        }
+
+        closeVerifyModalBtn.addEventListener('click', closeVerifyModal);
+
+        // Allow pressing Enter key in verification input
+        verifyInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                verifySubmitBtn.click();
+            }
+        });
+
+        verifySubmitBtn.addEventListener('click', () => {
+            if (!studentToVerify) return;
+
+            const inputVal = verifyInput.value.trim().toLowerCase();
+            if (!inputVal) {
+                verifyError.textContent = "Please enter your ID or Name.";
+                verifyError.classList.remove('hidden');
+                return;
+            }
+
+            // Check if input exactly matches the student ID or exactly matches the Name
+            const isExactIdMatch = studentToVerify.studentId && studentToVerify.studentId.toLowerCase() === inputVal && studentToVerify.studentId.toLowerCase() !== 'n/a';
+            const isExactNameMatch = studentToVerify.name.toLowerCase() === inputVal;
+
+            if (isExactIdMatch || isExactNameMatch) {
+                // VERIFICATION SUCCESSFUL
+                verifyError.classList.add('hidden');
+                
+                // Construct GC Link UX
+                const colorConfig = getStyleForColor(studentToVerify.color);
+                const teamChatUrl = teamLinks[studentToVerify.color.toLowerCase()];
+                
+                if (teamChatUrl && teamChatUrl.trim() !== '') {
+                    verifyGcLinkContainer.innerHTML = `
+                        <a href="${teamChatUrl}" target="_blank" rel="noopener noreferrer" class="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#00B2FF] to-[#006AFF] hover:from-[#0099FF] hover:to-[#005CE6] text-white px-4 py-3 sm:py-4 rounded-xl text-sm sm:text-base font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-95">
+                            <i class="ph-fill ph-messenger-logo text-xl sm:text-2xl"></i>
+                            <span>Join ${colorConfig.name} Group Chat</span>
+                        </a>
+                    `;
+                } else {
+                    verifyGcLinkContainer.innerHTML = `
+                        <div class="p-4 bg-slate-800/50 border border-slate-700 rounded-xl text-center">
+                            <span class="text-sm text-slate-400 italic">The admin hasn't set the group chat link yet. Check back later!</span>
+                        </div>
+                    `;
+                }
+
+                // Switch UI inside modal
+                verifyFormContainer.classList.add('hidden');
+                verifySuccessContainer.classList.remove('hidden');
+                verifySuccessContainer.classList.add('flex'); // Ensure flex is applied since it was hidden
+
+            } else {
+                // VERIFICATION FAILED
+                verifyError.textContent = "Invalid Student ID or Name. Try again.";
+                verifyError.classList.remove('hidden');
+                // Shake animation for error feedback
+                verifyInput.classList.add('translate-x-1');
+                setTimeout(() => verifyInput.classList.remove('translate-x-1'), 100);
+                setTimeout(() => verifyInput.classList.add('-translate-x-1'), 200);
+                setTimeout(() => verifyInput.classList.remove('-translate-x-1'), 300);
+            }
+        });
+
+
         // --- Event Handlers ---
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim();
-            if (searchQuery.length > 0) selectedColor = null; 
+            selectedColor = null; // Clear flag selection when searching
             updateUI();
         });
 
@@ -737,7 +878,7 @@
 
         // --- CSV Logic & Database Write ---
         downloadBtn.addEventListener('click', () => {
-            const csvContent = "StudentID,Name,Color\n26-0001,Juan Dela Cruz,Red\n26-0002,Maria Clara,Blue\n26-0003,Jose Rizal,Black\n26-0004,Andres Bonifacio,Green\n26-0005,Gabriela Silang,Pink\n26-0006,Apolinario Mabini,Violet\n26-0007,Emilio Aguinaldo,Orange";
+            const csvContent = "StudentID,Name,Color\n26-0001,Juan Dela Cruz,Red\n26-0002,Maria Clara,Blue\n26-0004,Andres Bonifacio,Green\n26-0005,Gabriela Silang,Pink\n26-0006,Apolinario Mabini,Violet\n26-0007,Emilio Aguinaldo,Orange";
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -777,7 +918,7 @@
 
                             const validColors = teamColors.map(c => c.name.toLowerCase());
                             const normalizedColor = color.toLowerCase();
-                            const finalColor = validColors.includes(normalizedColor) ? normalizedColor : 'black';
+                            const finalColor = validColors.includes(normalizedColor) ? normalizedColor : 'pink';
 
                             if (name) {
                                 newStudents.push({
@@ -845,44 +986,60 @@
             
             if (students.length > 0) {
                 clearDataBtn.classList.remove('hidden');
-                adminTableBody.innerHTML = '';
+                adminTeamsContainer.innerHTML = ''; // Clear previous tables
                 
-                const previewList = students.slice(0, 10);
-                previewList.forEach(student => {
-                    const colorObj = getStyleForColor(student.color);
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-slate-800/50 transition-colors group';
-                    tr.innerHTML = `
-                        <td class="py-3 px-5 sm:px-6 text-slate-400 text-xs tracking-wider">${student.studentId || 'N/A'}</td>
-                        <td class="py-3 px-5 sm:px-6 font-semibold text-white truncate max-w-[150px] sm:max-w-[200px]">${student.name}</td>
-                        <td class="py-3 px-5 sm:px-6">
-                            <span class="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[9px] sm:text-[10px] font-bold uppercase tracking-widest ${colorObj.bgClass} text-white shadow-sm border border-white/10">
-                                <i class="ph-fill ph-fire"></i>
-                                ${student.color}
-                            </span>
-                        </td>
-                    `;
-                    adminTableBody.appendChild(tr);
-                });
+                teamColors.forEach(colorConfig => {
+                    const teamStudents = students.filter(s => s.color.toLowerCase() === colorConfig.name.toLowerCase());
+                    
+                    if (teamStudents.length === 0) return; // Skip if no students in this team
 
-                if (students.length > 10) {
-                    adminTableFooter.classList.remove('hidden');
-                    adminTableTotal.textContent = students.length;
-                } else {
-                    adminTableFooter.classList.add('hidden');
-                }
+                    // Generate table rows for the team
+                    const tableRows = teamStudents.map(student => `
+                        <tr class="hover:bg-slate-800/50 transition-colors group">
+                            <td class="py-2 px-4 border-b border-slate-700/50 text-slate-400 text-xs tracking-wider">${student.studentId || 'N/A'}</td>
+                            <td class="py-2 px-4 border-b border-slate-700/50 font-semibold text-white truncate max-w-[150px] sm:max-w-[250px]">${student.name}</td>
+                        </tr>
+                    `).join('');
+
+                    // Create the team block container
+                    const teamBlock = document.createElement('div');
+                    teamBlock.className = 'rounded-xl overflow-hidden border border-slate-700/80 bg-slate-900/50 shadow-lg';
+                    
+                    teamBlock.innerHTML = `
+                        <div class="px-4 py-3 flex items-center justify-between ${colorConfig.bgClass} bg-opacity-20 border-b border-slate-700/80">
+                            <div class="flex items-center gap-2">
+                                <i class="ph-fill ph-flag ${colorConfig.textClass} text-lg"></i>
+                                <h4 class="font-bold ${colorConfig.textClass} uppercase tracking-wider text-sm">${colorConfig.name} Team</h4>
+                            </div>
+                            <span class="text-xs bg-black/40 text-white px-2 py-1 rounded-full font-medium border border-white/10">${teamStudents.length} Athletes</span>
+                        </div>
+                        <div class="max-h-[250px] overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left text-xs sm:text-sm whitespace-nowrap">
+                                <thead class="bg-slate-900/80 text-slate-400 text-[10px] uppercase tracking-widest sticky top-0 z-10 shadow-md">
+                                    <tr>
+                                        <th class="py-2 px-4 w-1/3">Student ID</th>
+                                        <th class="py-2 px-4 w-2/3">Participant Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/50">
+                                    ${tableRows}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    
+                    adminTeamsContainer.appendChild(teamBlock);
+                });
+                
             } else {
                 clearDataBtn.classList.add('hidden');
-                adminTableFooter.classList.add('hidden');
-                adminTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="3" class="p-8 sm:p-12 text-center text-slate-500">
-                            <div class="flex flex-col items-center justify-center">
-                                <i class="ph-fill ph-database text-4xl sm:text-5xl mb-3 opacity-20"></i>
-                                <p class="text-xs sm:text-sm">Database is empty. Import a CSV to populate.</p>
-                            </div>
-                        </td>
-                    </tr>
+                adminTeamsContainer.innerHTML = `
+                    <div class="p-8 sm:p-12 text-center text-slate-500 w-full">
+                        <div class="flex flex-col items-center justify-center">
+                            <i class="ph-fill ph-database text-4xl sm:text-5xl mb-3 opacity-20"></i>
+                            <p class="text-xs sm:text-sm">Database is empty. Import a CSV to populate.</p>
+                        </div>
+                    </div>
                 `;
             }
         }

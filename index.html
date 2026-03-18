@@ -33,6 +33,7 @@
                         blob: "blob 7s infinite",
                         float: "float 4s ease-in-out infinite",
                         pulseGlow: "pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                        shake: "shake 0.3s ease-in-out",
                     },
                     keyframes: {
                         blob: {
@@ -48,6 +49,11 @@
                         pulseGlow: {
                             "0%, 100%": { opacity: 1, filter: "drop-shadow(0 0 10px rgba(250, 204, 21, 0.5))" },
                             "50%": { opacity: .8, filter: "drop-shadow(0 0 20px rgba(250, 204, 21, 0.9))" }
+                        },
+                        shake: {
+                            "0%, 100%": { transform: "translateX(0)" },
+                            "25%": { transform: "translateX(-5px)" },
+                            "75%": { transform: "translateX(5px)" }
                         }
                     }
                 }
@@ -194,15 +200,7 @@
 
             <!-- Students Grid -->
             <div id="students-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <!-- Default Empty State -->
-                <div class="col-span-full py-16 sm:py-24 flex flex-col items-center justify-center text-center animate-slide-up">
-                    <div class="bg-slate-800/50 p-6 sm:p-8 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.3)] border border-slate-700 mb-6 relative">
-                        <i class="ph-fill ph-radar text-5xl sm:text-6xl text-slate-400 animate-pulse"></i>
-                        <div class="absolute inset-0 border-2 border-slate-600 rounded-full animate-ping opacity-20"></div>
-                    </div>
-                    <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 tracking-wide">Awaiting Search</h3>
-                    <p class="text-slate-400 text-sm sm:text-base max-w-xs sm:max-w-sm leading-relaxed px-4">Type your name or ID in the search box, or select a team flag to view the roster.</p>
-                </div>
+                <!-- Default Empty State injected by JS -->
             </div>
 
         </div>
@@ -259,7 +257,7 @@
 
     <!-- Admin Modal Overlay -->
     <div id="admin-modal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-50 flex items-center justify-center p-4 transition-all opacity-0">
-        <div class="glass-card rounded-2xl sm:rounded-3xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] border border-slate-700 shadow-2xl transform scale-95 transition-all" id="admin-modal-content">
+        <div class="glass-card rounded-2xl sm:rounded-3xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] border border-slate-700 shadow-2xl transform scale-95 transition-all" id="admin-modal-content">
             
             <div class="bg-gradient-to-r from-yellow-500 to-yellow-400 text-slate-900 px-5 sm:px-8 py-4 sm:py-6 flex items-center justify-between sticky top-0 z-10">
                 <div class="flex items-center space-x-2 sm:space-x-3">
@@ -307,6 +305,51 @@
                     </div>
                 </div>
 
+                <!-- Manual Entry Area -->
+                <div class="glass-card rounded-xl sm:rounded-2xl p-5 sm:p-6 mb-8 border border-slate-700">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500/20 text-orange-400 rounded-xl flex items-center justify-center border border-orange-500/30">
+                            <i class="ph-fill ph-user-plus text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-lg sm:text-xl">Manual Entry</h3>
+                            <p class="text-xs sm:text-sm text-slate-400">Add an athlete directly to the database.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Student ID (Optional)</label>
+                            <input type="text" id="manual-id" class="block w-full px-3 py-2 border border-slate-600/50 rounded-lg bg-slate-800/60 text-white placeholder-slate-500 focus:outline-none focus:border-orange-400 transition-all text-sm shadow-inner" placeholder="e.g. 26-0001" />
+                        </div>
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Full Name</label>
+                            <input type="text" id="manual-name" class="block w-full px-3 py-2 border border-slate-600/50 rounded-lg bg-slate-800/60 text-white placeholder-slate-500 focus:outline-none focus:border-orange-400 transition-all text-sm shadow-inner" placeholder="e.g. Juan Dela Cruz" />
+                        </div>
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Assigned Team</label>
+                            <div class="relative">
+                                <select id="manual-team" class="block w-full px-3 py-2 border border-slate-600/50 rounded-lg bg-slate-800/60 text-white focus:outline-none focus:border-orange-400 transition-all text-sm appearance-none shadow-inner">
+                                    <option value="pink">Pink Team</option>
+                                    <option value="blue">Blue Team</option>
+                                    <option value="green">Green Team</option>
+                                    <option value="red">Red Team</option>
+                                    <option value="violet">Violet Team</option>
+                                    <option value="orange">Orange Team</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                                    <i class="ph-bold ph-caret-down"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button id="manual-add-btn" class="flex items-center space-x-2 bg-orange-600 hover:bg-orange-500 text-white py-2 px-5 rounded-xl transition-all font-bold shadow-lg active:scale-[0.98]">
+                            <i class="ph-bold ph-plus text-lg"></i>
+                            <span class="text-sm">Add Athlete</span>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Configure Team Links -->
                 <div class="glass-card rounded-xl sm:rounded-2xl p-5 sm:p-6 mb-8 border border-slate-700">
                     <div class="flex items-center gap-3 mb-4">
@@ -330,8 +373,8 @@
                 </div>
 
                 <!-- Database Preview by Team -->
-                <div class="glass-card rounded-xl sm:rounded-2xl overflow-hidden border border-slate-700">
-                    <div class="px-5 sm:px-6 py-4 border-b border-slate-700/50 flex items-center justify-between bg-slate-800/50">
+                <div class="glass-card rounded-xl sm:rounded-2xl overflow-hidden border border-slate-700 relative">
+                    <div class="px-5 sm:px-6 py-4 border-b border-slate-700/50 flex items-center justify-between bg-slate-800/50 sticky top-0 z-20">
                         <h3 class="font-bold text-white text-sm sm:text-base">Database Preview (By Team)</h3>
                         <span id="admin-total-count" class="bg-blue-500/20 text-blue-300 text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full border border-blue-500/30">
                             0 Records
@@ -346,8 +389,45 @@
                 <!-- Clear Data -->
                 <div class="mt-6 flex justify-center sm:justify-end">
                     <button id="clear-data-btn" class="flex items-center space-x-2 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all hidden active:scale-[0.98]">
-                        <i class="ph-bold ph-trash text-base sm:text-lg"></i>
-                        <span>Wipe Database</span>
+                        <i class="ph-bold ph-warning text-base sm:text-lg"></i>
+                        <span>Wipe Entire Database</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals for Validating Deletions (Replacing generic confirms) -->
+    <!-- Individual Delete Modal -->
+    <div id="delete-modal" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-xl z-[60] flex items-center justify-center p-4 transition-all opacity-0">
+        <div class="glass-card rounded-2xl sm:rounded-3xl w-full max-w-sm overflow-hidden flex flex-col border border-slate-700 shadow-2xl transform scale-95 transition-all" id="delete-modal-content">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/30">
+                    <i class="ph-fill ph-trash text-3xl"></i>
+                </div>
+                <h3 class="text-white font-bold text-xl mb-2">Delete Athlete?</h3>
+                <p class="text-slate-400 text-sm mb-6">Are you sure you want to remove <strong id="delete-athlete-name" class="text-white text-base"></strong> from the database? This action cannot be undone.</p>
+                <div class="flex gap-3">
+                    <button id="cancel-delete-btn" class="flex-1 py-3 px-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold transition-all border border-slate-600">Cancel</button>
+                    <button id="confirm-delete-btn" class="flex-1 py-3 px-4 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-red-500/20">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wipe Database Modal -->
+    <div id="wipe-modal" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-xl z-[60] flex items-center justify-center p-4 transition-all opacity-0">
+        <div class="glass-card rounded-2xl sm:rounded-3xl w-full max-w-md overflow-hidden flex flex-col border border-red-900/50 shadow-2xl transform scale-95 transition-all" id="wipe-modal-content">
+            <div class="p-6 text-center">
+                <div class="w-20 h-20 bg-red-600/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-5 border border-red-500/30">
+                    <i class="ph-fill ph-warning-octagon text-5xl animate-pulse"></i>
+                </div>
+                <h3 class="text-white font-black text-2xl mb-2">Wipe Entire Database</h3>
+                <p class="text-slate-400 text-sm mb-6 leading-relaxed">This will permanently delete all <strong class="text-white">student records</strong> from the live cloud database. Team links and configurations will remain untouched.</p>
+                <div class="flex gap-3">
+                    <button id="cancel-wipe-btn" class="flex-1 py-3 px-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold transition-all border border-slate-600">Cancel</button>
+                    <button id="confirm-wipe-btn" class="flex-1 py-3 px-4 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-red-500/20 flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-trash"></i> Confirm Wipe
                     </button>
                 </div>
             </div>
@@ -382,6 +462,7 @@
         let searchQuery = '';
         let selectedColor = null;
         let studentToVerify = null; 
+        let studentToDeleteId = null;
 
         // --- TEAM CONFIGURATION ---
         const teamColors = [
@@ -414,7 +495,25 @@
         const downloadBtn = document.getElementById('download-btn');
         const csvUpload = document.getElementById('csv-upload');
         const adminTotalCount = document.getElementById('admin-total-count');
+        
+        // Manual Add DOM
+        const manualAddBtn = document.getElementById('manual-add-btn');
+        const manualId = document.getElementById('manual-id');
+        const manualName = document.getElementById('manual-name');
+        const manualTeam = document.getElementById('manual-team');
+
+        // Delete/Wipe Modals
         const clearDataBtn = document.getElementById('clear-data-btn');
+        const wipeModal = document.getElementById('wipe-modal');
+        const cancelWipeBtn = document.getElementById('cancel-wipe-btn');
+        const confirmWipeBtn = document.getElementById('confirm-wipe-btn');
+        const wipeModalContent = document.getElementById('wipe-modal-content');
+
+        const deleteModal = document.getElementById('delete-modal');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const deleteModalContent = document.getElementById('delete-modal-content');
+        const deleteAthleteName = document.getElementById('delete-athlete-name');
 
         // Verification Modal DOM
         const verifyModal = document.getElementById('verify-modal');
@@ -427,6 +526,19 @@
         const verifyFormContainer = document.getElementById('verify-form-container');
         const verifySuccessContainer = document.getElementById('verify-success-container');
         const verifyGcLinkContainer = document.getElementById('verify-gc-link-container');
+
+        // Helper: "Not Listed" generic UI chunk
+        const notListedUI = `
+            <div class="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl max-w-sm mx-auto shadow-lg backdrop-blur-sm animate-fade-in">
+                <div class="flex items-center gap-2 mb-1 justify-center text-yellow-400">
+                    <i class="ph-fill ph-info text-lg"></i>
+                    <span class="font-bold text-xs uppercase tracking-widest">Not Yet Listed?</span>
+                </div>
+                <p class="text-xs sm:text-sm text-yellow-200/80 leading-relaxed">
+                    If you cannot find your name, please look for <strong class="text-yellow-400">Ms. Joreen</strong> at the frontline to have your record added.
+                </p>
+            </div>
+        `;
 
         // --- Init & Auth ---
         async function init() {
@@ -621,20 +733,22 @@
                                 <i class="ph-fill ph-magnifying-glass text-4xl text-slate-500"></i>
                             </div>
                             <h3 class="text-lg font-bold text-white tracking-wide">No athletes found</h3>
-                            <p class="text-slate-400 text-sm mt-1 max-w-sm">Please check the spelling of your name or Student ID.</p>
+                            <p class="text-slate-400 text-sm mt-1 mb-4 max-w-sm">Please check the spelling of your name or Student ID.</p>
+                            ${notListedUI}
                         </div>
                     `;
                 }
             } else {
                 resultsHeader.classList.add('hidden');
                 studentsContainer.innerHTML = `
-                    <div class="col-span-full py-16 sm:py-24 flex flex-col items-center justify-center text-center animate-slide-up">
+                    <div class="col-span-full py-10 sm:py-16 flex flex-col items-center justify-center text-center animate-slide-up">
                         <div class="bg-slate-800/50 p-6 sm:p-8 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.3)] border border-slate-700 mb-6 relative group">
                             <i class="ph-fill ph-radar text-5xl sm:text-6xl text-slate-400 lg:group-hover:text-yellow-400 transition-colors duration-500 animate-[spin_4s_linear_infinite]"></i>
                             <div class="absolute inset-0 border-2 border-slate-600 rounded-full animate-ping opacity-20"></div>
                         </div>
                         <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 tracking-wide">Awaiting Search</h3>
-                        <p class="text-slate-400 text-sm sm:text-base max-w-xs sm:max-w-sm leading-relaxed px-4">Type your name or ID in the search box to find your record, or click a team flag to view the roster.</p>
+                        <p class="text-slate-400 text-sm sm:text-base max-w-xs sm:max-w-sm leading-relaxed px-4 mb-2">Type your name or ID in the search box to find your record, or click a team flag to view the roster.</p>
+                        ${notListedUI}
                     </div>
                 `;
             }
@@ -733,7 +847,6 @@
                 return;
             }
 
-            // Fix: Add .trim() to ensure hidden trailing spaces from CSVs don't break validation
             const dbId = studentToVerify.studentId ? studentToVerify.studentId.trim().toLowerCase() : '';
             const dbName = studentToVerify.name ? studentToVerify.name.trim().toLowerCase() : '';
 
@@ -775,8 +888,7 @@
             }
         });
 
-
-        // --- Event Handlers ---
+        // --- Main Searching Event Handlers ---
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim();
             selectedColor = null; 
@@ -790,6 +902,7 @@
             updateUI();
         });
 
+        // --- ADMIN DASHBOARD LOGIC ---
         function openAdminModal() {
             adminModal.classList.remove('hidden');
             setTimeout(() => {
@@ -828,6 +941,59 @@
 
         closeModalBtn.addEventListener('click', closeAdminModal);
         
+        // --- Manual Athlete Add ---
+        manualAddBtn.addEventListener('click', async () => {
+            if (!currentUser) return;
+            
+            const idVal = manualId.value.trim();
+            const nameVal = manualName.value.trim();
+            const teamVal = manualTeam.value;
+
+            if (!nameVal) {
+                manualName.classList.add('border-red-500', 'animate-shake');
+                setTimeout(() => {
+                    manualName.classList.remove('border-red-500', 'animate-shake');
+                }, 500);
+                return;
+            }
+
+            const newStudent = {
+                id: Date.now() + Math.random(),
+                studentId: idVal || 'N/A',
+                name: nameVal,
+                color: teamVal
+            };
+
+            const updatedStudents = [...students, newStudent];
+            
+            const originalHtml = manualAddBtn.innerHTML;
+            manualAddBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-lg"></i> <span class="text-sm">Adding...</span>`;
+
+            try {
+                const rosterDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'database', 'roster');
+                await setDoc(rosterDocRef, { students: updatedStudents });
+                
+                // Clear fields
+                manualId.value = '';
+                manualName.value = '';
+                
+                manualAddBtn.innerHTML = `<i class="ph-bold ph-check text-lg"></i> <span class="text-sm">Added!</span>`;
+                manualAddBtn.classList.replace('bg-orange-600', 'bg-green-600');
+                manualAddBtn.classList.replace('hover:bg-orange-500', 'hover:bg-green-500');
+            } catch (error) {
+                console.error("Error manually adding athlete:", error);
+                manualAddBtn.innerHTML = `<i class="ph-bold ph-x text-lg"></i> <span class="text-sm">Error</span>`;
+                manualAddBtn.classList.replace('bg-orange-600', 'bg-red-600');
+                manualAddBtn.classList.replace('hover:bg-orange-500', 'hover:bg-red-500');
+            }
+
+            setTimeout(() => {
+                manualAddBtn.innerHTML = originalHtml;
+                manualAddBtn.classList.remove('bg-green-600', 'hover:bg-green-500', 'bg-red-600', 'hover:bg-red-500');
+                manualAddBtn.classList.add('bg-orange-600', 'hover:bg-orange-500');
+            }, 2000);
+        });
+
         // --- Save Dynamic Links ---
         saveLinksBtn.addEventListener('click', async () => {
             if (!currentUser) return;
@@ -896,8 +1062,6 @@
                             let name = '';
                             let color = '';
 
-                            // Fix: Chained multiple trims to guarantee whitespace removal from CSVs 
-                            // even when strings are padded within quotes inside the CSV format
                             if (parts.length === 2) {
                                 name = parts[0].trim().replace(/^["']|["']$/g, '').trim();
                                 color = parts[1].trim().replace(/^["']|["']$/g, '').trim();
@@ -957,18 +1121,86 @@
             reader.readAsText(file);
         });
 
-        clearDataBtn.addEventListener('click', async () => {
-            if (confirm("🚨 WARNING: Permanently clear the live cloud database? This affects all users.")) {
-                if (!currentUser) return;
-                
-                try {
-                    const rosterDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'database', 'roster');
-                    await deleteDoc(rosterDocRef);
-                } catch (error) {
-                    console.error("Error clearing database:", error);
-                }
-            }
+        // --- Custom Modals for Deletions ---
+        // Wipe Database Modal
+        clearDataBtn.addEventListener('click', () => {
+            wipeModal.classList.remove('hidden');
+            setTimeout(() => {
+                wipeModal.classList.remove('opacity-0');
+                wipeModalContent.classList.remove('scale-95');
+                wipeModalContent.classList.add('scale-100');
+            }, 10);
         });
+
+        cancelWipeBtn.addEventListener('click', () => {
+            wipeModal.classList.add('opacity-0');
+            wipeModalContent.classList.remove('scale-100');
+            wipeModalContent.classList.add('scale-95');
+            setTimeout(() => { wipeModal.classList.add('hidden'); }, 300);
+        });
+
+        confirmWipeBtn.addEventListener('click', async () => {
+            if (!currentUser) return;
+            const origHtml = confirmWipeBtn.innerHTML;
+            confirmWipeBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Wiping...`;
+            try {
+                const rosterDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'database', 'roster');
+                await deleteDoc(rosterDocRef);
+            } catch (error) {
+                console.error("Error clearing database:", error);
+            }
+            confirmWipeBtn.innerHTML = origHtml;
+            cancelWipeBtn.click();
+        });
+
+        // Individual Delete Modal Handlers
+        cancelDeleteBtn.addEventListener('click', () => {
+            deleteModal.classList.add('opacity-0');
+            deleteModalContent.classList.remove('scale-100');
+            deleteModalContent.classList.add('scale-95');
+            setTimeout(() => { 
+                deleteModal.classList.add('hidden'); 
+                studentToDeleteId = null;
+            }, 300);
+        });
+
+        confirmDeleteBtn.addEventListener('click', async () => {
+            if (!currentUser || !studentToDeleteId) return;
+            
+            const updatedStudents = students.filter(s => s.id != studentToDeleteId);
+            const origHtml = confirmDeleteBtn.innerHTML;
+            confirmDeleteBtn.innerHTML = `Deleting...`;
+
+            try {
+                const rosterDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'database', 'roster');
+                await setDoc(rosterDocRef, { students: updatedStudents });
+            } catch (error) {
+                console.error("Error deleting athlete:", error);
+            }
+
+            confirmDeleteBtn.innerHTML = origHtml;
+            cancelDeleteBtn.click();
+        });
+
+        function bindDeleteButtons() {
+            document.querySelectorAll('.delete-athlete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.getAttribute('data-id');
+                    const student = students.find(s => s.id == id);
+                    if (student) {
+                        studentToDeleteId = id;
+                        deleteAthleteName.textContent = student.name;
+                        
+                        deleteModal.classList.remove('hidden');
+                        setTimeout(() => {
+                            deleteModal.classList.remove('opacity-0');
+                            deleteModalContent.classList.remove('scale-95');
+                            deleteModalContent.classList.add('scale-100');
+                        }, 10);
+                    }
+                });
+            });
+        }
 
         function updateAdminTable() {
             adminTotalCount.textContent = `${students.length} Records`;
@@ -986,6 +1218,11 @@
                         <tr class="hover:bg-slate-800/50 transition-colors group">
                             <td class="py-2 px-4 border-b border-slate-700/50 text-slate-400 text-xs tracking-wider">${student.studentId || 'N/A'}</td>
                             <td class="py-2 px-4 border-b border-slate-700/50 font-semibold text-white truncate max-w-[150px] sm:max-w-[250px]">${student.name}</td>
+                            <td class="py-2 px-4 border-b border-slate-700/50 text-right">
+                                <button class="delete-athlete-btn text-slate-500 hover:text-red-400 transition-colors p-1" data-id="${student.id}" title="Remove ${student.name}">
+                                    <i class="ph-bold ph-trash text-base"></i>
+                                </button>
+                            </td>
                         </tr>
                     `).join('');
 
@@ -1005,7 +1242,8 @@
                                 <thead class="bg-slate-900/80 text-slate-400 text-[10px] uppercase tracking-widest sticky top-0 z-10 shadow-md">
                                     <tr>
                                         <th class="py-2 px-4 w-1/3">Student ID</th>
-                                        <th class="py-2 px-4 w-2/3">Participant Name</th>
+                                        <th class="py-2 px-4 flex-1">Participant Name</th>
+                                        <th class="py-2 px-4 w-12 text-right"></th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-800/50">
@@ -1017,6 +1255,9 @@
                     
                     adminTeamsContainer.appendChild(teamBlock);
                 });
+
+                // Attach event listeners for the new delete buttons
+                bindDeleteButtons();
                 
             } else {
                 clearDataBtn.classList.add('hidden');
@@ -1024,7 +1265,7 @@
                     <div class="p-8 sm:p-12 text-center text-slate-500 w-full">
                         <div class="flex flex-col items-center justify-center">
                             <i class="ph-fill ph-database text-4xl sm:text-5xl mb-3 opacity-20"></i>
-                            <p class="text-xs sm:text-sm">Database is empty. Import a CSV to populate.</p>
+                            <p class="text-xs sm:text-sm">Database is empty. Add manually or import a CSV to populate.</p>
                         </div>
                     </div>
                 `;

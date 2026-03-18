@@ -381,7 +381,7 @@
         let teamLinks = {}; 
         let searchQuery = '';
         let selectedColor = null;
-        let studentToVerify = null; // Track which student is being verified
+        let studentToVerify = null; 
 
         // --- TEAM CONFIGURATION ---
         const teamColors = [
@@ -441,7 +441,6 @@
                 </div>
             `;
 
-            // Initialize Authentication
             const initAuth = async () => {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     try {
@@ -469,7 +468,6 @@
         function setupRealtimeListener() {
             if (!currentUser) return;
             
-            // Listen to Students Roster
             const rosterDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'database', 'roster');
             onSnapshot(rosterDocRef, (docSnap) => {
                 if (docSnap.exists()) {
@@ -488,7 +486,6 @@
                 `;
             });
 
-            // Listen to Settings (Team Links)
             const settingsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'database', 'settings');
             onSnapshot(settingsDocRef, (docSnap) => {
                 if (docSnap.exists()) {
@@ -497,7 +494,6 @@
                     teamLinks = {};
                 }
                 renderAdminLinks();
-                // If modal is open and successful, we might need to update link but UX is fine if we leave it static until reopened
             }, (error) => {
                 console.error("Firestore settings listening error: ", error);
             });
@@ -597,7 +593,6 @@
             if (searchQuery) {
                 const query = searchQuery.toLowerCase();
                 
-                // Allow partial matching so users can find themselves easily
                 filtered = students.filter(s => {
                     const matchName = s.name.toLowerCase().includes(query);
                     const matchId = s.studentId && s.studentId.toLowerCase().includes(query);
@@ -681,7 +676,6 @@
                     </div>
                 `;
                 
-                // Add click listener to open verification modal
                 el.addEventListener('click', () => {
                     openVerifyModal(student);
                 });
@@ -697,7 +691,6 @@
             verifyInput.value = '';
             verifyError.classList.add('hidden');
             
-            // Reset to form view
             verifyFormContainer.classList.remove('hidden');
             verifySuccessContainer.classList.add('hidden');
             
@@ -708,7 +701,6 @@
                 verifyModalContent.classList.add('scale-100');
             }, 10);
             
-            // Focus input for better UX (slight delay to let modal animate)
             setTimeout(() => { verifyInput.focus(); }, 300);
         }
 
@@ -724,7 +716,6 @@
 
         closeVerifyModalBtn.addEventListener('click', closeVerifyModal);
 
-        // Allow pressing Enter key in verification input
         verifyInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -742,15 +733,16 @@
                 return;
             }
 
-            // Check if input exactly matches the student ID or exactly matches the Name
-            const isExactIdMatch = studentToVerify.studentId && studentToVerify.studentId.toLowerCase() === inputVal && studentToVerify.studentId.toLowerCase() !== 'n/a';
-            const isExactNameMatch = studentToVerify.name.toLowerCase() === inputVal;
+            // Fix: Add .trim() to ensure hidden trailing spaces from CSVs don't break validation
+            const dbId = studentToVerify.studentId ? studentToVerify.studentId.trim().toLowerCase() : '';
+            const dbName = studentToVerify.name ? studentToVerify.name.trim().toLowerCase() : '';
+
+            const isExactIdMatch = dbId && dbId === inputVal && dbId !== 'n/a';
+            const isExactNameMatch = dbName === inputVal;
 
             if (isExactIdMatch || isExactNameMatch) {
-                // VERIFICATION SUCCESSFUL
                 verifyError.classList.add('hidden');
                 
-                // Construct GC Link UX
                 const colorConfig = getStyleForColor(studentToVerify.color);
                 const teamChatUrl = teamLinks[studentToVerify.color.toLowerCase()];
                 
@@ -769,16 +761,13 @@
                     `;
                 }
 
-                // Switch UI inside modal
                 verifyFormContainer.classList.add('hidden');
                 verifySuccessContainer.classList.remove('hidden');
-                verifySuccessContainer.classList.add('flex'); // Ensure flex is applied since it was hidden
+                verifySuccessContainer.classList.add('flex'); 
 
             } else {
-                // VERIFICATION FAILED
                 verifyError.textContent = "Invalid Student ID or Name. Try again.";
                 verifyError.classList.remove('hidden');
-                // Shake animation for error feedback
                 verifyInput.classList.add('translate-x-1');
                 setTimeout(() => verifyInput.classList.remove('translate-x-1'), 100);
                 setTimeout(() => verifyInput.classList.add('-translate-x-1'), 200);
@@ -790,7 +779,7 @@
         // --- Event Handlers ---
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim();
-            selectedColor = null; // Clear flag selection when searching
+            selectedColor = null; 
             updateUI();
         });
 
@@ -907,13 +896,15 @@
                             let name = '';
                             let color = '';
 
+                            // Fix: Chained multiple trims to guarantee whitespace removal from CSVs 
+                            // even when strings are padded within quotes inside the CSV format
                             if (parts.length === 2) {
-                                name = parts[0].trim().replace(/^["']|["']$/g, '');
-                                color = parts[1].trim().replace(/^["']|["']$/g, '');
+                                name = parts[0].trim().replace(/^["']|["']$/g, '').trim();
+                                color = parts[1].trim().replace(/^["']|["']$/g, '').trim();
                             } else {
-                                studentId = parts[0].trim().replace(/^["']|["']$/g, '');
-                                color = parts[parts.length - 1].trim().replace(/^["']|["']$/g, '');
-                                name = parts.slice(1, parts.length - 1).join(',').trim().replace(/^["']|["']$/g, '');
+                                studentId = parts[0].trim().replace(/^["']|["']$/g, '').trim();
+                                color = parts[parts.length - 1].trim().replace(/^["']|["']$/g, '').trim();
+                                name = parts.slice(1, parts.length - 1).join(',').trim().replace(/^["']|["']$/g, '').trim();
                             }
 
                             const validColors = teamColors.map(c => c.name.toLowerCase());
@@ -939,14 +930,12 @@
                     return;
                 }
 
-                // UI Feedback: Saving
                 const btn = document.querySelector('label[for="csv-upload"] span');
                 const originalText = btn.textContent;
                 btn.textContent = `Saving to Cloud...`;
                 btn.parentElement.classList.add('bg-blue-800');
 
                 try {
-                    // Overwrite the single document array containing all students
                     const rosterDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'database', 'roster');
                     await setDoc(rosterDocRef, { students: newStudents });
                     
@@ -986,14 +975,13 @@
             
             if (students.length > 0) {
                 clearDataBtn.classList.remove('hidden');
-                adminTeamsContainer.innerHTML = ''; // Clear previous tables
+                adminTeamsContainer.innerHTML = ''; 
                 
                 teamColors.forEach(colorConfig => {
                     const teamStudents = students.filter(s => s.color.toLowerCase() === colorConfig.name.toLowerCase());
                     
-                    if (teamStudents.length === 0) return; // Skip if no students in this team
+                    if (teamStudents.length === 0) return;
 
-                    // Generate table rows for the team
                     const tableRows = teamStudents.map(student => `
                         <tr class="hover:bg-slate-800/50 transition-colors group">
                             <td class="py-2 px-4 border-b border-slate-700/50 text-slate-400 text-xs tracking-wider">${student.studentId || 'N/A'}</td>
@@ -1001,7 +989,6 @@
                         </tr>
                     `).join('');
 
-                    // Create the team block container
                     const teamBlock = document.createElement('div');
                     teamBlock.className = 'rounded-xl overflow-hidden border border-slate-700/80 bg-slate-900/50 shadow-lg';
                     
